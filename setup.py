@@ -5,6 +5,7 @@ setup(
     version='1.0-dev',
     namespace_packages=['izeni.django'],
     packages=find_packages(),
+    include_package_data=True,
     author='Izeni, Inc.',
     author_email='django-accounts@izeni.com',
     description=open('README.md').read(),
