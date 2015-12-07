@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='izeni-django-accounts',
     version='1.0-dev',
-    namespace_packages=['izeni.django'],
+    namespace_packages=['izeni', 'izeni.django'],
     packages=find_packages(),
     include_package_data=True,
     author='Izeni, Inc.',
