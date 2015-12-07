@@ -18,6 +18,6 @@ setup(
         'izeni-django-common',
     ],
     dependency_links=[
-        'https://dev.izeni.net/izeni/django-common/repository/archive.zip?ref=1.0-dev#egg=izeni_django_common-1.0_dev',
+        'https://dev.izeni.net/izeni/django-common/repository/archive.zip?ref=1.0#egg=izeni_django_common-1.0',
     ]
 )
