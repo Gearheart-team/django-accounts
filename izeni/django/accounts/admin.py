@@ -1,10 +1,33 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import (ReadOnlyPasswordHashField,
                                        AdminPasswordChangeForm,
                                        UserCreationForm)
+from social.apps.django_app.default import models
 from .models import EmailUser
+
+
+def admin_cleanup(admin_site=None):
+    """
+    Unregister dependency app models to unclutter the admin, and return
+    a cleaned up admin site instance.
+    """
+    admin_site = admin_site or admin.site
+    try:
+        admin_site.unregister(models.Association)
+    except NotRegistered:
+        pass
+    try:
+        admin_site.unregister(models.Nonce)
+    except NotRegistered:
+        pass
+    try:
+        admin_site.unregister(models.UserSocialAuth)
+    except NotRegistered:
+        pass
+    return admin_site
 
 
 class UserChangeForm(forms.ModelForm):
