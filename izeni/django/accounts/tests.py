@@ -27,7 +27,6 @@ class UserTestCase(TestCase):
     def test_password_reset(self):
         response = self.client.post(
             '/api/reset-password/{}'.format(self.userInfo['email']))
-        print(response.reason_phrase)
 
     def test_html_email(self):
         pass

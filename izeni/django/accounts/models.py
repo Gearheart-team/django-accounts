@@ -207,7 +207,6 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
         Send email with a unique link using validation_key to validate account.
         """
         self.validation_key = uuid.uuid4()
-        print(self.validation_key)
         self.save()
         self._send_html_mail(
             'Please validate your email address',
