@@ -36,3 +36,6 @@ class UserTestCase(TestCase):
 
     def test_verify_user(self):
         pass
+
+    def test_placeholder_profile_url(self):
+        print(self.user.get_placeholder_url())
