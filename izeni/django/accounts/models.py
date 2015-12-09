@@ -166,6 +166,20 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
         msg.attach_alternative(body_html, 'text/html')
         msg.send()
 
+    @classmethod
+    def get_placeholder_url(cls, request=None) -> str:
+        """
+        Return a URL for the placeholder profile image, typically used when
+        no custom image exists for a user.
+
+        If a request object is provided, it will be used to construct an
+        absolute URL; otherwise, a relative URL is returned.
+        """
+        url = '{}img/placeholder_profile.png'.format(settings.STATIC_URL)
+        if request:
+            return '{}://{}{}'.format(request.scheme, request.get_host(), url)
+        return url
+
     # Get the profile pic
     def get_image_url(self, request=None) -> str:
         """
@@ -175,7 +189,7 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
         if not self.image:
             if has_gravatar(self.email):
                 return get_gravatar_url(self.email, size=256)
-            url = '{}img/placeholder_profile.png'.format(settings.STATIC_URL)
+            return self.get_placeholder_url(request=request)
         else:
             url = self.image.url
         if request:
