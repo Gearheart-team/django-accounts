@@ -31,7 +31,7 @@ def get_placeholder_url(request=None) -> str:
     via settings.SITE_DOMAIN and settings.SITE_SCHEMA if possible.
     If all else fails, then a relative URL is returned.
     """
-    url = '{}img/placeholder_profile.png'.format(settings.STATIC_URL)
+    url = '{}accounts/images/placeholder_profile.png'.format(settings.STATIC_URL)
     if request:
         return '{}://{}{}'.format(request.scheme, request.get_host(), url)
     elif getattr(settings, 'SITE_DOMAIN', None):
