@@ -5,7 +5,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import EmailUser, get_placeholder_url
 
 
-class UserTestCase(StaticLiveServerTestCase):
+class AccountsTestCase(StaticLiveServerTestCase):
     def setUp(self):
         self.userInfo = {
             'email': 'test@example.com',
