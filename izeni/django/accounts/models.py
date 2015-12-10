@@ -21,6 +21,28 @@ from django.utils.translation import ugettext_lazy as _
 from izeni.django.common.models import UUIDPrimaryKey, CreatedModifiedMixin
 
 
+def get_placeholder_url(cls, request=None) -> str:
+    """
+    Return a URL for the placeholder profile image, typically used when
+    no custom image exists for a user.
+
+    If a request object is provided, it will be used to construct an
+    absolute URL; if no request passed, an absolute URL is constructed
+    via settings.SITE_DOMAIN and settings.SITE_SCHEMA if possible.
+    If all else fails, then a relative URL is returned.
+    """
+    url = '{}img/placeholder_profile.png'.format(settings.STATIC_URL)
+    if request:
+        return '{}://{}{}'.format(request.scheme, request.get_host(), url)
+    elif getattr(settings, 'SITE_DOMAIN', None):
+        return '{schema}://{domain}{path}'.format(
+            schema=getattr(settings, 'SITE_SCHEMA', 'http'),
+            domain=settings.SITE_DOMAIN,
+            path=url,
+        )
+    return url
+
+
 def get_gravatar_url(email, size=80, secure=True, default='mm'):
     if secure:
         url_base = 'https://secure.gravatar.com/'
@@ -166,20 +188,6 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
         msg.attach_alternative(body_html, 'text/html')
         msg.send()
 
-    @classmethod
-    def get_placeholder_url(cls, request=None) -> str:
-        """
-        Return a URL for the placeholder profile image, typically used when
-        no custom image exists for a user.
-
-        If a request object is provided, it will be used to construct an
-        absolute URL; otherwise, a relative URL is returned.
-        """
-        url = '{}img/placeholder_profile.png'.format(settings.STATIC_URL)
-        if request:
-            return '{}://{}{}'.format(request.scheme, request.get_host(), url)
-        return url
-
     # Get the profile pic
     def get_image_url(self, request=None) -> str:
         """
@@ -189,7 +197,7 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
         if not self.image:
             if has_gravatar(self.email):
                 return get_gravatar_url(self.email, size=256)
-            return self.get_placeholder_url(request=request)
+            return get_placeholder_url(request=request)
         else:
             url = self.image.url
         if request:
