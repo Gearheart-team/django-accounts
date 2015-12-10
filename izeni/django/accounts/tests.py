@@ -38,4 +38,5 @@ class UserTestCase(TestCase):
         pass
 
     def test_placeholder_profile_url(self):
-        print(get_placeholder_url())
+        response = self.client.get(get_placeholder_url())
+        self.assertEqual(response.status_code, 200)
