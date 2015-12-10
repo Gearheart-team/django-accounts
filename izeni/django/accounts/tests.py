@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+import requests
 from django.test import Client
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .models import EmailUser, get_placeholder_url
@@ -39,5 +41,10 @@ class UserTestCase(StaticLiveServerTestCase):
         pass
 
     def test_placeholder_profile_url(self):
-        response = self.client.get(get_placeholder_url())
+        # get the placeholder profile url, then reconstruct it with the
+        # live test server location instead
+        path = urlparse(get_placeholder_url()).path
+        url = self.live_server_url + path
+        # use a real HTTP request to get the image
+        response = requests.get(url)
         self.assertEqual(response.status_code, 200)
