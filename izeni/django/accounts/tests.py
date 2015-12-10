@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from .models import EmailUser
+from .models import EmailUser, get_placeholder_url
 
 
 class UserTestCase(TestCase):
@@ -38,4 +38,4 @@ class UserTestCase(TestCase):
         pass
 
     def test_placeholder_profile_url(self):
-        print(self.user.get_placeholder_url())
+        print(get_placeholder_url())
