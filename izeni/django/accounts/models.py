@@ -21,7 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 from izeni.django.common.models import UUIDPrimaryKey, CreatedModifiedMixin
 
 
-def get_placeholder_url(cls, request=None) -> str:
+def get_placeholder_url(request=None) -> str:
     """
     Return a URL for the placeholder profile image, typically used when
     no custom image exists for a user.
