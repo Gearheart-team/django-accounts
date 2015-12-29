@@ -1,5 +1,6 @@
 from django.conf import settings
 from django import forms
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import TemplateView
@@ -18,21 +19,28 @@ from social.exceptions import AuthCanceled
 
 from izeni.django.common.permissions import IsAuthenticatedOrCreate
 from izeni.django.common.views import GenericErrorResponse
-from .models import EmailUser
 from .serializers import UserSerializer, CreateUserSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class SettingsUserForViews:
+    def __init__(self, *args, **kwargs):
+        if not getattr(self, 'model'):
+            self.model = get_user_model()
+        if not getattr(self, 'queryset'):
+            self.queryset = self.model.objects.all()
+        super().__init__(*args, **kwargs)
+
+
+class UserViewSet(SettingsUserForViews,
+                  viewsets.ModelViewSet):
     """
     Other endpoints:
 
     GET (used to filter)
     users/upload_image/ (multipart image upload)
     """
-    model = EmailUser
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticatedOrCreate,)
-    queryset = EmailUser.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -66,7 +74,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['POST'], permission_classes=[IsAdminUser])
     def impersonate(self, request):
         email = request.data.get('email')
-        user = EmailUser.objects.get(email=email)
+        user = get_user_model().objects.get(email=email)
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
@@ -76,7 +84,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ResetPassword(views.APIView):
     """View for entering and re-entering a new password. """
-    model = EmailUser
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -91,7 +98,7 @@ class ResetPassword(views.APIView):
 
     def get(self, *args, **kwargs):
         key = kwargs.get('validation_key')
-        get_object_or_404(EmailUser, validation_key=key)
+        get_object_or_404(get_user_model(), validation_key=key)
         return self.render_page()
 
     def post(self, *args, **kwargs):
@@ -103,7 +110,7 @@ class ResetPassword(views.APIView):
         if password != re_entered:
             return self.render_page(False, 'Passwords do not match')
         validation_key = kwargs.get('validation_key')
-        user = EmailUser.objects.get(validation_key=validation_key)
+        user = get_user_model().objects.get(validation_key=validation_key)
         user.set_password(password)
         user.save()
         user.send_reset_password_success_email()
@@ -119,23 +126,23 @@ class RequestPasswordChange(views.APIView):
 
     def post(self, request, *args, **kwargs):
         email = kwargs.get('email')
-        user = get_object_or_404(EmailUser, email=email)
+        user = get_object_or_404(get_user_model(), email=email)
         user.send_reset_password_email(request)
         # 202 : we've accepted the request, but user must complete the process.
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
-class ValidateUserView(TemplateView):
+class ValidateUserView(SettingsUserForViews,
+                       TemplateView):
     """
     User validation link routs to this view, notifying success.
     If user has already validated, this view will 404.
     """
     template_name = 'validation/validate.html'
-    model = EmailUser
 
     def get_context_data(self, **kwargs):
         validation_key = kwargs.get('validation_key')
-        user = get_object_or_404(EmailUser, validation_key=validation_key)
+        user = get_object_or_404(get_user_model(), validation_key=validation_key)
         user.validate()
 
 
