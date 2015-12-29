@@ -93,8 +93,8 @@ class EmailUserManager(BaseUserManager):
         return self._create_user(email, password, is_superuser=True, **kwargs)
 
 
-class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
-                PermissionsMixin):
+class AbstractEmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
+                        PermissionsMixin):
     GENDER_CHOICES = [
         ('f', 'Female'),
         ('m', 'Male'),
@@ -128,6 +128,7 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
     USERNAME_FIELD = 'email'
 
     class Meta:
+        abstract = True
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
@@ -268,7 +269,7 @@ class EmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
             'email/user_reset_password_success.txt')
 
 
-@receiver(post_save, sender=EmailUser)
+@receiver(post_save, sender=AbstractEmailUser)
 def validate_new_user(sender, instance, created, **kwargs):
     """Send a validation email when a new user is created."""
     if created and not instance.validated_at:
