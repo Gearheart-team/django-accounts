@@ -23,12 +23,12 @@ from .serializers import UserSerializer, CreateUserSerializer
 
 
 class SettingsUserForViews:
-    def __init__(self, *args, **kwargs):
-        if not getattr(self, 'model'):
-            self.model = get_user_model()
-        if not getattr(self, 'queryset'):
-            self.queryset = self.model.objects.all()
-        super().__init__(*args, **kwargs)
+    def __new__(cls, *more):
+        if not getattr(cls, 'model'):
+            cls.model = get_user_model()
+        if not getattr(cls, 'queryset'):
+            cls.queryset = cls.model.objects.all()
+        super().__new__(cls, *more)
 
 
 class UserViewSet(SettingsUserForViews,
