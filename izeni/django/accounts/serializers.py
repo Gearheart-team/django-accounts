@@ -1,14 +1,25 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import EmailUser
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
+class SettingsUserForSerializers:
+    def __init__(self, *args, **kwargs):
+        if not getattr(self.Meta, 'model'):
+            self.Meta.model = get_user_model()
+        super().__init__(*args, **kwargs)
+
+
+class CreateUserSerializer(SettingsUserForSerializers,
+                           serializers.ModelSerializer):
     def create(self, validated_data):
-        user = EmailUser.objects.create_user(**validated_data)
+        # reference the user model the same way DRF source
+        # does (it's odd, but whatever)
+        user = self.Meta.model.objects.create_user(**validated_data)
         return user
 
     class Meta:
-        model = EmailUser
+        # the model attribute will be set by
+        # SettingsUserForSerializers.__init__() - see that method
         read_only_fields = ('date_joined', 'last_login',
                             'is_developer', )
         exclude = ('is_superuser', 'groups', 'user_permissions',
@@ -16,10 +27,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(SettingsUserForSerializers,
+                     serializers.ModelSerializer):
     # TODO image url instead of file
     class Meta:
-        model = EmailUser
+        # the model attribute will be set by
+        # SettingsUserForSerializers.__init__() - see that method
         read_only_fields = ('email', 'date_joined', 'last_login',
                             'is_developer', )
         exclude = ('password', 'is_superuser', 'groups', 'user_permissions',

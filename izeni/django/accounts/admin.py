@@ -1,12 +1,19 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import (ReadOnlyPasswordHashField,
                                        AdminPasswordChangeForm,
                                        UserCreationForm)
 from social.apps.django_app.default import models
-from .models import EmailUser
+
+
+class SettingsUserForAdmin:
+    def __init__(self, *args, **kwargs):
+        if not getattr(self.Meta, 'model'):
+            self.Meta.model = get_user_model()
+        super().__init__(*args, **kwargs)
 
 
 def admin_cleanup(admin_site=None):
@@ -30,7 +37,8 @@ def admin_cleanup(admin_site=None):
     return admin_site
 
 
-class UserChangeForm(forms.ModelForm):
+class UserChangeForm(SettingsUserForAdmin,
+                     forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
     password hash display field.
@@ -42,7 +50,8 @@ class UserChangeForm(forms.ModelForm):
                    "using <a href=\"password/\">this form</a>."))
 
     class Meta:
-        model = EmailUser
+        # the model attribute will be set by
+        # SettingsUserForAdmin.__init__() - see that method
         fields = ('email', 'password')
 
     def clean_password(self):
@@ -52,16 +61,18 @@ class UserChangeForm(forms.ModelForm):
         return self.initial["password"]
 
 
-class MyUserCreationForm(UserCreationForm):
+class MyUserCreationForm(SettingsUserForAdmin,
+                         UserCreationForm):
     class Meta:
-        model = EmailUser
+        # the model attribute will be set by
+        # SettingsUserForAdmin.__init__() - see that method
         fields = ("email",)
 
     def clean_email(self):
         email = self.cleaned_data['email']
         try:
-            EmailUser.objects.get(email=email)
-        except EmailUser.DoesNotExist:
+            get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
 
@@ -103,4 +114,3 @@ class EmailUserAdmin(UserAdmin):
             ),
         }),
     )
-admin.site.register(EmailUser, EmailUserAdmin)

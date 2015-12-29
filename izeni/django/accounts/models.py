@@ -269,7 +269,7 @@ class AbstractEmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
             'email/user_reset_password_success.txt')
 
 
-@receiver(post_save, sender=AbstractEmailUser)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def validate_new_user(sender, instance, created, **kwargs):
     """Send a validation email when a new user is created."""
     if created and not instance.validated_at:

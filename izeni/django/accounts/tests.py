@@ -1,8 +1,9 @@
 from urllib.parse import urlparse
 import requests
+from django.contrib.auth import get_user_model
 from django.test import Client
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from .models import EmailUser, get_placeholder_url
+from .models import get_placeholder_url
 
 
 class AccountsTestCase(StaticLiveServerTestCase):
@@ -14,7 +15,7 @@ class AccountsTestCase(StaticLiveServerTestCase):
             'last_name': 'Lastname'
         }
         self.client.post('/api/users/', self.userInfo)
-        self.user = EmailUser.objects.get(email=self.userInfo['email'])
+        self.user = get_user_model().objects.get(email=self.userInfo['email'])
         self.client = Client()
         pass
 
