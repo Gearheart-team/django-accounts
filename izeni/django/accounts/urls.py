@@ -6,7 +6,7 @@ from .views import (RequestPasswordChange, ResetPassword, UserViewSet,
                     ValidateUserView)
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet, base_name='account')
+router.register(r'accounts', UserViewSet, base_name='account')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
