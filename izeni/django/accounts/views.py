@@ -26,8 +26,6 @@ class SettingsUserForViews:
     def __new__(cls, *more):
         if not getattr(cls, 'model'):
             cls.model = get_user_model()
-        if not getattr(cls, 'queryset'):
-            cls.queryset = cls.model.objects.all()
         super().__new__(cls, *more)
 
 
@@ -41,6 +39,9 @@ class UserViewSet(SettingsUserForViews,
     """
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticatedOrCreate,)
+
+    def get_queryset(self):
+        return self.model.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'create':
