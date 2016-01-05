@@ -252,7 +252,7 @@ class AbstractEmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
             'email/user_reset_password.html',
             'email/user_reset_password.txt',
             url=settings.SITE_DOMAIN + reverse(
-                'reset-password',
+                'reset-request',
                 kwargs={"validation_key": self.validation_key})
         )
 
