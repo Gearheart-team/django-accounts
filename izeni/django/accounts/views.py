@@ -22,15 +22,7 @@ from izeni.django.common.views import GenericErrorResponse
 from .serializers import UserSerializer, CreateUserSerializer
 
 
-class SettingsUserForViews:
-    def __new__(cls, *more):
-        if not getattr(cls, 'model'):
-            cls.model = get_user_model()
-        super().__new__(cls, *more)
-
-
-class UserViewSet(SettingsUserForViews,
-                  viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     """
     Other endpoints:
 
@@ -41,7 +33,7 @@ class UserViewSet(SettingsUserForViews,
     permission_classes = (IsAuthenticatedOrCreate,)
 
     def get_queryset(self):
-        return self.model.objects.all()
+        return get_user_model().objects.all()
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -133,8 +125,7 @@ class RequestPasswordChange(views.APIView):
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
-class ValidateUserView(SettingsUserForViews,
-                       TemplateView):
+class ValidateUserView(TemplateView):
     """
     User validation link routs to this view, notifying success.
     If user has already validated, this view will 404.
