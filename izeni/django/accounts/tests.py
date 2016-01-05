@@ -32,7 +32,7 @@ class AccountsTestCase(StaticLiveServerTestCase):
 
     def test_password_reset(self):
         response = self.client.post(
-                reverse('reset-password') + self.userInfo['email'])
+                reverse('reset-password', email=self.userInfo['email']))
 
     def test_html_email(self):
         pass
