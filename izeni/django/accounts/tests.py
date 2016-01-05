@@ -3,6 +3,8 @@ import requests
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from rest_framework.reverse import reverse
+
 from .models import get_placeholder_url
 
 
@@ -14,23 +16,23 @@ class AccountsTestCase(StaticLiveServerTestCase):
             'first_name': 'Firstname',
             'last_name': 'Lastname'
         }
-        self.client.post('/api/users/', self.userInfo)
+        self.client.post(reverse('account-list'), self.userInfo)
         self.user = get_user_model().objects.get(email=self.userInfo['email'])
         self.client = Client()
         pass
 
     def test_user_creation(self):
         self.userInfo['email'] = 'test2@example.com'
-        response = self.client.post('/api/users/', self.userInfo)
+        response = self.client.post(reverse('account-list'), self.userInfo)
         self.assertEqual(response.status_code, 201)
 
     def test_user_is_unique(self):
-        response = self.client.post('/api/users/', self.userInfo)
+        response = self.client.post(reverse('account-list'), self.userInfo)
         self.assertEqual(response.status_code, 400)
 
     def test_password_reset(self):
         response = self.client.post(
-            '/api/reset-password/{}'.format(self.userInfo['email']))
+                reverse('reset-password') + self.userInfo['email'])
 
     def test_html_email(self):
         pass
