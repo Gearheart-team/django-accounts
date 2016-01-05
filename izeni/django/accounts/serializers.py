@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 class SettingsUserForSerializers:
     def __init__(self, *args, **kwargs):
-        if not getattr(self.Meta, 'model'):
+        if not getattr(self.Meta, 'model', None):
             self.Meta.model = get_user_model()
         super().__init__(*args, **kwargs)
 
