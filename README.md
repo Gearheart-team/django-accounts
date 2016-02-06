@@ -22,7 +22,7 @@ The following settings are available (the defaults are also shown below):
 ```python
 IZENI = {
     'ACCOUNTS': {
-        'DO_NOT_CLEANUP_ADMIN': False,
+        'CLEANUP_ADMIN': True,
     }
 }
 ```
