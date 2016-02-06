@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
@@ -6,6 +7,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import (ReadOnlyPasswordHashField,
                                        AdminPasswordChangeForm,
                                        UserCreationForm)
+from django.contrib.auth.models import Group
 from social.apps.django_app.default import models
 
 
@@ -16,12 +18,15 @@ class SettingsUserForAdmin:
         super().__init__(*args, **kwargs)
 
 
-def admin_cleanup(admin_site=None):
+def accounts_admin_cleanup(admin_site=None):
     """
     Unregister dependency app models to unclutter the admin, and return
     a cleaned up admin site instance.
     """
     admin_site = admin_site or admin.site
+    izeni_admin_settings = getattr(settings, 'IZENI', {}).get('ACCOUNTS', {})
+    if izeni_admin_settings.get('DO_NOT_CLEANUP_ADMIN', False):
+        return admin_site
     try:
         admin_site.unregister(models.Association)
     except NotRegistered:
@@ -34,7 +39,19 @@ def admin_cleanup(admin_site=None):
         admin_site.unregister(models.UserSocialAuth)
     except NotRegistered:
         pass
+    # we don't typically use Django Group features, so don't show in the admin
+    try:
+        admin.site.unregister(Group)
+    except NotRegistered:
+        pass
+    # if DRF is installed, we don't need to see tokens in the admin
+    try:
+        from rest_framework.authtoken.models import Token
+        admin.site.unregister(Token)
+    except NotRegistered:
+        pass
     return admin_site
+accounts_admin_cleanup()
 
 
 class UserChangeForm(SettingsUserForAdmin,
