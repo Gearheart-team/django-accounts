@@ -25,7 +25,7 @@ def accounts_admin_cleanup(admin_site=None):
     """
     admin_site = admin_site or admin.site
     izeni_admin_settings = getattr(settings, 'IZENI', {}).get('ACCOUNTS', {})
-    if izeni_admin_settings.get('DO_NOT_CLEANUP_ADMIN', False):
+    if not izeni_admin_settings.get('CLEANUP_ADMIN', True):
         return admin_site
     try:
         admin_site.unregister(models.Association)
