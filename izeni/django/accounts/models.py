@@ -179,7 +179,7 @@ class AbstractEmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
             "user": self
         }
         default_context.update(context)
-        from_email = settings.EMAIL_HOST_USER
+        from_email = settings.DEFAULT_FROM_EMAIL
         body_text = render_to_string(template_text, default_context)
         body_html = render_to_string(template_html, default_context)
 
