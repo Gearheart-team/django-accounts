@@ -22,7 +22,7 @@ from izeni.django.common.views import GenericErrorResponse
 from .serializers import UserSerializer, CreateUserSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class BaseUserViewSet(viewsets.ModelViewSet):
     """
     Other endpoints:
 
