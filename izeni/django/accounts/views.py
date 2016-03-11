@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
 from requests.exceptions import HTTPError
 from rest_framework import status, views, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -199,3 +200,8 @@ def social_auth(request, backend, *args, **kwargs):
         'token': token.key,
         'id': str(user.id)
     })
+
+
+class NoCSRFSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
