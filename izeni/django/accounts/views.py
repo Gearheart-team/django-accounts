@@ -17,9 +17,18 @@ from rest_framework.exceptions import ValidationError
 from social.apps.django_app.utils import psa
 from social.exceptions import AuthCanceled
 
-from izeni.django.common.permissions import IsAuthenticatedOrCreate
-from izeni.django.common.views import GenericErrorResponse
+from .permissions import BaseUserPermission
 from .serializers import UserSerializer, CreateUserSerializer
+
+
+class GenericErrorResponse(Response):
+    def __init__(self, message):
+        # Ensure that the message always gets to the user in a standard format.
+        if isinstance(message, ValidationError):
+            message = message.detail
+        if isinstance(message, str):
+            message = [message]
+        super().__init__({"non_field_errors": message}, status=400)
 
 
 class BaseUserViewSet(viewsets.ModelViewSet):
@@ -30,7 +39,7 @@ class BaseUserViewSet(viewsets.ModelViewSet):
     users/upload_image/ (multipart image upload)
     """
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticatedOrCreate,)
+    permission_classes = (BaseUserPermission,)
 
     def get_queryset(self):
         return get_user_model().objects.all()
@@ -134,7 +143,8 @@ class ValidateUserView(TemplateView):
 
     def get_context_data(self, **kwargs):
         validation_key = kwargs.get('validation_key')
-        user = get_object_or_404(get_user_model(), validation_key=validation_key)
+        user = get_object_or_404(
+            get_user_model(), validation_key=validation_key)
         user.validate()
 
 
