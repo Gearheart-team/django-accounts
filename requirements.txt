@@ -1,2 +1,0 @@
-# use the requirements defined in setup.py
--e .

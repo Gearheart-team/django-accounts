@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 
 setup(
     name='izeni-django-accounts',
-    version='1.1',
     namespace_packages=['izeni', 'izeni.django'],
     packages=find_packages(),
     include_package_data=True,
@@ -15,9 +14,5 @@ setup(
         'djangorestframework<3.4',
         'python-social-auth==0.2.13',
         'requests==2.8.1',
-        'izeni-django-common',
     ],
-    dependency_links=[
-        'https://dev.izeni.net/izeni/django-common/repository/archive.zip?ref=1.0#egg=izeni_django_common-1.0',
-    ]
 )

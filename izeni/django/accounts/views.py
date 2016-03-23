@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
 from requests.exceptions import HTTPError
 from rest_framework import status, views, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -17,12 +18,21 @@ from rest_framework.exceptions import ValidationError
 from social.apps.django_app.utils import psa
 from social.exceptions import AuthCanceled
 
-from izeni.django.common.permissions import IsAuthenticatedOrCreate
-from izeni.django.common.views import GenericErrorResponse
+from .permissions import BaseUserPermission
 from .serializers import UserSerializer, CreateUserSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class GenericErrorResponse(Response):
+    def __init__(self, message):
+        # Ensure that the message always gets to the user in a standard format.
+        if isinstance(message, ValidationError):
+            message = message.detail
+        if isinstance(message, str):
+            message = [message]
+        super().__init__({"non_field_errors": message}, status=400)
+
+
+class BaseUserViewSet(viewsets.ModelViewSet):
     """
     Other endpoints:
 
@@ -30,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
     users/upload_image/ (multipart image upload)
     """
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticatedOrCreate,)
+    permission_classes = (BaseUserPermission,)
 
     def get_queryset(self):
         return get_user_model().objects.all()
@@ -134,7 +144,8 @@ class ValidateUserView(TemplateView):
 
     def get_context_data(self, **kwargs):
         validation_key = kwargs.get('validation_key')
-        user = get_object_or_404(get_user_model(), validation_key=validation_key)
+        user = get_object_or_404(
+            get_user_model(), validation_key=validation_key)
         user.validate()
 
 
@@ -189,3 +200,8 @@ def social_auth(request, backend, *args, **kwargs):
         'token': token.key,
         'id': str(user.id)
     })
+
+
+class NoCSRFSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
