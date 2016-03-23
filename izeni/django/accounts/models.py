@@ -18,8 +18,6 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from izeni.django.common.models import UUIDPrimaryKey, CreatedModifiedMixin
-
 
 def get_placeholder_url(request=None) -> str:
     """
@@ -93,12 +91,14 @@ class EmailUserManager(BaseUserManager):
         return self._create_user(email, password, is_superuser=True, **kwargs)
 
 
-class AbstractEmailUser(AbstractBaseUser, UUIDPrimaryKey, CreatedModifiedMixin,
-                        PermissionsMixin):
+class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = [
         ('f', 'Female'),
         ('m', 'Male'),
     ]
+
+    # Use a UUID for a primary key
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # User information
     email = models.EmailField(_('email address'), unique=True, blank=False)

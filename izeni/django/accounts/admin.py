@@ -18,6 +18,7 @@ class SettingsUserForAdmin:
         super().__init__(*args, **kwargs)
 
 
+# TODO: call this method via izeni.accounts.admin
 def accounts_admin_cleanup(admin_site=None):
     """
     Unregister dependency app models to unclutter the admin, and return
@@ -51,7 +52,6 @@ def accounts_admin_cleanup(admin_site=None):
     except NotRegistered:
         pass
     return admin_site
-accounts_admin_cleanup()
 
 
 class UserChangeForm(SettingsUserForAdmin,
