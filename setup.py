@@ -13,7 +13,8 @@ setup(
     install_requires=[
         'Django<1.10,>=1.9',
         'djangorestframework<3.4',
-        'python-social-auth==0.2.13',
+        #'python-social-auth==0.2.13',
+        'git+https://github.com/izeni-team/python-social-auth.git@psa_fixes#egg=python-social-auth'
         'requests==2.8.1',
     ],
 )
