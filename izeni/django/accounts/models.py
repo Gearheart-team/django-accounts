@@ -235,7 +235,7 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
             'Please validate your email address',
             'email/user_validation.html',
             'email/user_validation.txt',
-            url=settings.SITE_DOMAIN + reverse(
+            url='https://' + settings.SITE_DOMAIN + reverse(
                 'user-validation',
                 kwargs={"validation_key": self.validation_key})
         )
