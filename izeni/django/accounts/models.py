@@ -90,6 +90,9 @@ class EmailUserManager(BaseUserManager):
     def create_superuser(self, email, password, **kwargs):
         return self._create_user(email, password, is_superuser=True, **kwargs)
 
+    def get_by_natural_key(self, email):
+        return self.get(email__iexact=email)
+
 
 class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = [
