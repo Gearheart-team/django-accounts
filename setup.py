@@ -11,10 +11,10 @@ setup(
     description=open('README.md').read(),
     url='https://dev.izeni.net/izeni/django-accounts',
     install_requires=[
-        'Django<1.10,>=1.9',
-        'djangorestframework<3.4',
+        'Django==1.11.7',
+        'djangorestframework>3.4',
         #'python-social-auth==0.2.13',
-        'python-social-auth',
+        'social-auth-app-django',
         'requests==2.8.1',
     ],
     dependency_links=[

@@ -8,7 +8,7 @@ from django.contrib.auth.forms import (ReadOnlyPasswordHashField,
                                        AdminPasswordChangeForm,
                                        UserCreationForm)
 from django.contrib.auth.models import Group
-from social.apps.django_app.default import models
+from social_django import models
 
 
 class SettingsUserForAdmin:

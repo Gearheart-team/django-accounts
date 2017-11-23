@@ -15,8 +15,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken as OriginalObtain
 from rest_framework.exceptions import ValidationError
-from social.apps.django_app.utils import psa
-from social.exceptions import AuthCanceled
+from social_django.utils import psa
+from social_core.exceptions import AuthCanceled
 
 from .permissions import BaseUserPermission
 from .serializers import UserSerializer, CreateUserSerializer
